@@ -1,0 +1,24 @@
+{
+  "name": "OzAir Flight Tools \u2014 Pilot Test",
+  "short_name": "OzAir Tools",
+  "description": "OzAir Flight Tools v0.31a pilot evaluation",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf2f6",
+  "theme_color": "#103451",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
