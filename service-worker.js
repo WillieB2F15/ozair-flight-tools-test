@@ -4,11 +4,10 @@
    No changes to flight planning calculations or layouts.
 */
 
-const CACHE = 'ozair-v031a-pwa-public-test-3';
+const CACHE = 'ozair-v031a-pwa-public-test-4';
 
 const SHELL = [
   './',
-  './index.html',
   './manifest.webmanifest',
   './icons/icon-180.png',
   './icons/icon-192.png',
@@ -57,7 +56,7 @@ self.addEventListener('fetch', event => {
         // Network unavailable: serve the cached application.
       }
 
-      const offlinePage = await cache.match('./index.html');
+      const offlinePage = await cache.match('./');
       if (offlinePage) return offlinePage;
 
       return Response.error();
