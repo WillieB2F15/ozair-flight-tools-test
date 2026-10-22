@@ -92,6 +92,9 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline-color:#bd3
 #admin-auth .auth-actions button{flex:1}#auth-error{color:#a42323;font-weight:650;min-height:1.3em}
 </style><style>
 .legfields{grid-template-columns:repeat(5,minmax(0,1fr))}.waiver-not-met{background:#fff1a8;color:#735400;font-weight:800;padding:2px 5px;border-radius:4px}input[type=number]{appearance:textfield;-moz-appearance:textfield}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+/* NE-002: iPad Safari native date control must stay within its grid cell. */
+.legfields label{min-width:0}
+.legfields input[type="date"]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding:8px 4px;font-size:.82rem;-webkit-appearance:none;appearance:none}
 #weather-settings{background:#e8f2f8;border:1px solid #b8d0e1;border-radius:8px;padding:12px;margin:10px 0;display:flex;gap:14px;align-items:end;flex-wrap:wrap}#weather-settings label{max-width:360px}#weather-settings select{min-width:260px}
 #entire-print{display:none}#entire-print table{border-collapse:collapse;width:100%;font-size:10pt}#entire-print th,#entire-print td{border:1px solid #aaa;padding:5px;text-align:left}.entire-leg{break-inside:avoid;page-break-inside:avoid;border-top:2px solid #333;margin:12px 0;padding-top:6px}.entire-leg h2{font-size:13pt;margin:2px 0}.entire-leg p{font-size:10pt;margin:4px 0}
 @media(max-width:850px){.legfields{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:480px){.legfields{grid-template-columns:1fr}}
@@ -99,7 +102,7 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline-color:#bd3
 </style><style>
 /* v0.30: temperature dropdowns, fixed-density clarity, half-sheet cockpit card */
 .temp-band-field{min-width:0}.temp-band-field label{display:block}.temp-band-field select{width:100%}.temp-band-field .field-note{display:block;font-size:.75rem;color:#48637a;margin-top:4px}
-.dc-paper{width:100%;margin:12px 0 24px}.dc-half{min-height:0}.dc-fold-gap{height:22px;border-top:1px dashed #ddd;margin:8px 0}.dc-sheet{margin:0}.dc-sheet-head{font-size:1rem;padding-bottom:6px;margin-bottom:0}.dc-sheet-head b{font-size:1.05rem}.dc-leg{padding:7px 10px!important}.dc-line-one{display:grid;grid-template-columns:2.1fr repeat(4,1fr);gap:12px;align-items:center}.dc-route{display:flex;flex-direction:column;gap:2px}.dc-route b{font-size:.7rem;color:#506071}.dc-route strong{font-size:1.16rem;line-height:1.1}.dc-route span{font-size:.76rem}.dc-item{min-width:0;display:flex;flex-direction:column;gap:2px}.dc-item span{font-size:.68rem;color:#596777;white-space:nowrap}.dc-item strong{font-size:1rem;white-space:nowrap}.dc-fbo{font-size:.8rem;margin:5px 0 4px}.dc-line-two{border-top:1px solid #ccc;padding-top:5px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.dc-actual input{height:25px!important;min-height:25px!important;padding:2px 4px!important;font-size:.9rem!important}
+.dc-paper{width:100%;margin:12px 0 24px}.dc-half{min-height:0}.dc-fold-gap{height:22px;border-top:1px dashed #ddd;margin:8px 0}.dc-sheet{margin:0}.dc-sheet-head{font-size:1rem;padding-bottom:6px;margin-bottom:0}.dc-sheet-head b{font-size:1.05rem}.dc-leg{padding:7px 10px!important}.dc-line-one{display:grid;grid-template-columns:2.1fr repeat(4,1fr);gap:12px;align-items:center}.dc-route{display:flex;flex-direction:column;gap:2px}.dc-route b{font-size:.7rem;color:#506071}.dc-route strong{font-size:1.16rem;line-height:1.1}.dc-route span{font-size:.76rem}.dc-item{min-width:0;display:flex;flex-direction:column;gap:2px}.dc-item span{font-size:.68rem;color:#596777;white-space:nowrap}.dc-item strong{font-size:1rem;white-space:nowrap}.dc-item strong:has(+ .nothing){font-size:.8rem}.dc-fbo{font-size:.8rem;margin:5px 0 4px}.dc-line-two{border-top:1px solid #ccc;padding-top:5px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.dc-actual input{height:25px!important;min-height:25px!important;padding:2px 4px!important;font-size:.9rem!important}
 @media print{
 @page{size:letter portrait;margin:0.25in}
 html,body{margin:0!important;padding:0!important}
@@ -224,7 +227,38 @@ const density=l=>{const method=model?.density_method||'forecast';if(method!=='fo
 function bandForCelsius(t){if(!Number.isFinite(Number(t)))return '';const v=Number(t);if(v>=50)return BANDS[0].label;if(v>=36)return BANDS[1].label;if(v>=22)return BANDS[2].label;if(v>=10)return BANDS[3].label;if(v>=-1)return BANDS[4].label;if(v>=-12)return BANDS[5].label;if(v>=-28)return BANDS[6].label;return BANDS[7].label;}
 function arrivalWeatherStatus(l){if((model.density_method||'forecast')!=='forecast')return 'Reference only — fixed density active';if(l.arrival_forecast_status?.startsWith('Historical date'))return l.arrival_temperature_band?'Historical date — manual temperature band retained':'Historical date — forecast unavailable; select temperature manually';if(l.arrival_forecast_source==='manual'&&l.arrival_temperature_band)return 'Manual temperature band selected';if(l.arrival_forecast_source==='Open-Meteo'&&l.arrival_forecast_temp_c!==''&&l.arrival_forecast_temp_c!=null)return 'Forecast '+l.arrival_forecast_temp_c+'°C / '+Math.round(Number(l.arrival_forecast_temp_c)*9/5+32)+'°F — '+(l.arrival_forecast_status||'Open-Meteo');return l.arrival_temperature_band?(l.arrival_forecast_status||'Temperature band selected'):'Select a temperature band, or retrieve a forecast';}
 function weatherStatus(l){const method=model.density_method||'forecast';if(method!=='forecast')return 'Reference only — fixed density '+method+' lb/gal is active';if(l.forecast_status?.startsWith('Historical date'))return l.temperature_band?'Historical date — manual temperature band retained':'Historical date — forecast unavailable; select temperature manually';if(l.forecast_source==='manual'&&l.temperature_band)return 'Manual temperature band selected';if(l.forecast_source==='Open-Meteo'&&l.forecast_temp_c!==''&&l.forecast_temp_c!=null)return 'Forecast '+l.forecast_temp_c+'°C / '+Math.round(Number(l.forecast_temp_c)*9/5+32)+'°F — '+(l.forecast_status||'Open-Meteo');return l.temperature_band?(l.forecast_status||'Temperature band selected'):'Select a temperature band, or retrieve a forecast';}
-const airportAliases={SGF:[37.2457,-93.3886],KSGF:[37.2457,-93.3886],MKC:[39.1232,-94.5928],KMKC:[39.1232,-94.5928],LCK:[39.8138,-82.9278],KLCK:[39.8138,-82.9278],RKD:[44.0601,-69.0992],KRKD:[44.0601,-69.0992],DFW:[32.8998,-97.0403],KDFW:[32.8998,-97.0403],YYZ:[43.6777,-79.6248],CYYZ:[43.6777,-79.6248],CUN:[21.0365,-86.8771],MMUN:[21.0365,-86.8771]};
+const airportAliases={GKY:[32.6639,-97.0943],KGKY:[32.6639,-97.0943],FCM:[44.8272,-93.4571],KFCM:[44.8272,-93.4571],GCK:[37.9275,-100.7244],KGCK:[37.9275,-100.7244],SDL:[33.6229,-111.9105],KSDL:[33.6229,-111.9105],SGF:[37.2457,-93.3886],KSGF:[37.2457,-93.3886],MKC:[39.1232,-94.5928],KMKC:[39.1232,-94.5928],LCK:[39.8138,-82.9278],KLCK:[39.8138,-82.9278],RKD:[44.0601,-69.0992],KRKD:[44.0601,-69.0992],DFW:[32.8998,-97.0403],KDFW:[32.8998,-97.0403],YYZ:[43.6777,-79.6248],CYYZ:[43.6777,-79.6248],CUN:[21.0365,-86.8771],MMUN:[21.0365,-86.8771]};
+// NE-002: resolve airports beyond the original small demonstration list.
+// The public airport directory is used only for coordinates; forecast data still
+// comes from Open-Meteo. The original aliases remain available if lookup fails.
+let airportDirectoryPromise=null;
+async function airportDirectory(){
+ if(!airportDirectoryPromise){
+  airportDirectoryPromise=fetch('https://raw.githubusercontent.com/mwgg/Airports/master/airports.json', {cache:'force-cache'})
+   .then(r=>{if(!r.ok)throw Error('Airport directory HTTP '+r.status);return r.json();})
+   .catch(err=>{airportDirectoryPromise=null;throw err;});
+ }
+ return airportDirectoryPromise;
+}
+async function airportCoordinates(code){
+ const id=String(code||'').trim().toUpperCase();
+ if(airportAliases[id])return airportAliases[id];
+ if(!/^[A-Z0-9]{3,4}$/.test(id))return null;
+ const directory=await airportDirectory();
+ const matches=[];
+ if(directory[id])matches.push(directory[id]);
+ if(id.length===3&&directory['K'+id])matches.push(directory['K'+id]);
+ if(!matches.length){
+  for(const a of Object.values(directory)){
+   if(String(a.iata||'').toUpperCase()===id||String(a.icao||'').toUpperCase()===id){matches.push(a);break;}
+  }
+ }
+ const a=matches[0];
+ const lat=Number(a?.lat),lon=Number(a?.lon);
+ if(!a||!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return null;
+ airportAliases[id]=[lat,lon];
+ return airportAliases[id];
+}
 const canonicalAirport=code=>{const k=String(code||'').trim().toUpperCase();if(airportAliases[k])return airportAliases[k].join(',');return k;};
 async function refreshForecasts(){
  if((model.density_method||'forecast')!=='forecast')return;
@@ -235,18 +269,23 @@ async function refreshForecasts(){
    const arrival=side==='arrival',code=String(arrival?l.destination:l.departure||'').trim().toUpperCase();
    const time=arrival?l.land_utc:l.to_utc,prefix=arrival?'arrival_':'';
    const statusKey=prefix+'forecast_status';
-   const coords=airportAliases[code];
+   let coords=airportAliases[code];
    const setUnavailable=reason=>{l[statusKey]=reason+' — existing selection preserved';};
+   if(!coords&&code){
+    try{coords=await airportCoordinates(code);}
+    catch(err){setUnavailable('Airport lookup unavailable ('+String(err?.message||err)+')');continue;}
+   }
    if(!coords){setUnavailable('Airport location unavailable ('+(code||'blank')+')');continue;}
    if(!l.trip_date||!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time||'')){setUnavailable('Scheduled UTC date/time unavailable');continue;}
-   const utc=new Date(l.trip_date+'T'+time+':00Z'),delta=(utc.getTime()-now)/86400000;
+   const utcDateValue=(arrival?l.arrival_utc_date:l.departure_utc_date)||l.trip_date;
+   const utc=new Date(utcDateValue+'T'+time+':00Z'),delta=(utc.getTime()-now)/86400000;
    if(!Number.isFinite(delta)){setUnavailable('Invalid scheduled UTC date/time');continue;}
    if(delta<0){setUnavailable('Historical date — forecast unavailable');continue;}
    if(delta>15){setUnavailable('Outside forecast range');continue;}
-   const key=coords.join(',')+'|'+l.trip_date;
+   const key=coords.join(',')+'|'+utcDateValue;
    const job={i,l,side,code,time,key,prefix,field:arrival?'arrival_temperature_band':'temperature_band'};
    jobs.push(job);
-   if(!groups.has(key))groups.set(key,{coords,date:l.trip_date,jobs:[]});
+   if(!groups.has(key))groups.set(key,{coords,date:utcDateValue,jobs:[]});
    groups.get(key).jobs.push(job);
   }
  }
@@ -291,10 +330,12 @@ async function refreshForecasts(){
 }
 
 const order=(l,p)=>{const aircraft=ac(),d=density(l);if(!aircraft||!d)return null;const pounds=Math.max(0,n(l.plans[p].purchase_lb)),g=Math.ceil(pounds/d),unit=aircraft.refuel==='overwing'?2:1;return Math.ceil(g/unit)*unit;};
-const emptyLeg=(prev)=>({trip_code:'',trip_date:'',to_utc:'',land_utc:'',zfw_lb:'',fuel_purchase_method:'',departure:prev?prev.destination:'',destination:'',temperature_band:'',arrival_temperature_band:'',burn_lb:0,required_fuel_lb:0,fuel_price_per_gal:0,waiverable_ramp_fee_usd:0,minimum_gallons_for_waiver:0,mandatory_fees_usd:0,forecast_temp_c:'',forecast_source:'',forecast_status:'Not retrieved',plans:{'1':{purchase_lb:0},'2':{purchase_lb:0},'3':{purchase_lb:0}}});
+const emptyLeg=(prev)=>({trip_code:'',trip_date:'',departure_utc_date:'',arrival_utc_date:'',to_utc:'',land_utc:'',zfw_lb:'',fuel_purchase_method:'',departure:prev?prev.destination:'',destination:'',temperature_band:'',arrival_temperature_band:'',burn_lb:0,required_fuel_lb:0,fuel_price_per_gal:0,waiverable_ramp_fee_usd:0,minimum_gallons_for_waiver:0,mandatory_fees_usd:0,forecast_temp_c:'',forecast_source:'',forecast_status:'Not retrieved',plans:{'1':{purchase_lb:0},'2':{purchase_lb:0},'3':{purchase_lb:0}}});
 function reset(){version=1;dirty=false;model={trip:'',tail:'',initial:0,density_method:'forecast',legs:[emptyLeg(),emptyLeg()]};render();}
 function field(i,key,label,kind='text',extra=''){const l=model.legs[i],v=l[key]??'';return `<label>${label}<input data-i="${i}" data-field="${key}" type="${kind}" ${kind==='number'?`inputmode="${key==='fuel_price_per_gal'||key==='waiverable_ramp_fee_usd'||key==='mandatory_fees_usd'?'decimal':'numeric'}"`: ''} value="${esc(v)}" ${extra}></label>`;}
-function utcfield(i,key,label){const raw=model.legs[i][key]||'',v=/^\d{2}:\d{2}$/.test(raw)?raw:'';return `<label>${label}<input data-i="${i}" data-field="${key}" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" title="24-hour UTC time (00:00–23:59)" value="${esc(v)}"><span class="field-note">24-hour UTC (HH:MM)</span></label>`;}
+function utcfield(i,key,label){const l=model.legs[i],dateKey=key==='to_utc'?'departure_utc_date':'arrival_utc_date';const date=l[dateKey]||l.trip_date||'',time=l[key]||'';const display=date&&time?`${date.slice(5,7)}/${date.slice(8,10)}/${date.slice(2,4)} ${time}`:'';return `<label>${label} (GMT)<input data-i="${i}" data-field="${key}" type="text" inputmode="text" placeholder="MM/DD/YY HH:MM" maxlength="14" value="${esc(display)}" title="GMT date and 24-hour time"><span class="field-note">MM/DD/YY HH:MM GMT</span></label>`;}
+function parseGMTInput(v){v=String(v||'').trim();if(!v)return {date:'',time:''};const m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\s+(\d{1,2}):(\d{2})$/);if(!m)return null;const year=Number(m[3].length===2?'20'+m[3]:m[3]),month=+m[1],day=+m[2],hour=+m[4],minute=+m[5];const d=new Date(Date.UTC(year,month-1,day));if(d.getUTCFullYear()!==year||d.getUTCMonth()!==month-1||d.getUTCDate()!==day||hour>23||minute>59)return null;return {date:`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`,time:`${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`};}
+function displayGMT(l,arrival=false){const date=(arrival?l.arrival_utc_date:l.departure_utc_date)||l.trip_date||'',time=arrival?l.land_utc:l.to_utc;return date&&time?`${date.slice(5,7)}/${date.slice(8,10)}/${date.slice(2,4)} ${time} GMT`:'—';}
 function bandfield(i,key,label){return `<label>${label}<select data-i="${i}" data-field="${key}"><option value="">Select temperature</option>${BANDS.map(b=>`<option value="${esc(b.label)}" ${model.legs[i][key]===b.label?'selected':''}>${esc(b.label)}</option>`).join('')}</select></label>`;}
 function methodfield(i){return `<label>Fuel purchase method<select data-i="${i}" data-field="fuel_purchase_method"><option value="">Select method</option>${methodData.map(m=>`<option value="${esc(m)}" ${model.legs[i].fuel_purchase_method===m?'selected':''}>${esc(m)}</option>`).join('')}</select></label>`;}
 function weatherField(i){const l=model.legs[i];return `<div class="temp-band-field">${bandfield(i,'temperature_band','Departure temperature range')}<span class="field-note">${esc(weatherStatus(l))}</span></div>`;}
@@ -338,7 +379,7 @@ function saveTrip(next=false){if(next)version++;const name=tripFileName();downlo
 function safeLeave(){if(!dirty)return true;return confirm('You have unsaved changes. Continue without saving? Choose Cancel to return and save the trip first.');}
 function openView(id){if(id==='home'&&$('planner').hidden===false&&!safeLeave())return;document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==id);if(id==='calculator')clearCalculator();if(id==='datacard')renderDataCard();if(id==='admin')renderAdmin();window.scrollTo(0,0);}
 
-$('inputs').addEventListener('change',e=>{const t=e.target;if(!t.dataset.field)return;const i=Number(t.dataset.i),f=t.dataset.field;if(['to_utc','land_utc'].includes(f)){let v=t.value.trim();if(/^\d{4}$/.test(v))v=v.slice(0,2)+':'+v.slice(2);if(v&&!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v)){alert('Enter UTC time in 24-hour HH:MM format (for example 14:35).');t.focus();return;}model.legs[i][f]=v;}else{model.legs[i][f]=t.type==='number'?(t.value===''?'':n(t.value)):(['departure','destination','trip_code'].includes(f)?t.value.toUpperCase().trim():t.value);}if(f==='temperature_band'){model.legs[i].forecast_source='manual';model.legs[i].forecast_status='Manual temperature band selected';model.legs[i].forecast_temp_c='';}if(f==='arrival_temperature_band'){model.legs[i].arrival_forecast_source='manual';model.legs[i].arrival_forecast_status='Manual temperature band selected';model.legs[i].arrival_forecast_temp_c='';}
+$('inputs').addEventListener('change',e=>{const t=e.target;if(!t.dataset.field)return;const i=Number(t.dataset.i),f=t.dataset.field;if(['to_utc','land_utc'].includes(f)){const parsed=parseGMTInput(t.value);if(!parsed){alert('Enter GMT date/time as MM/DD/YY HH:MM (example: 10/23/26 00:30).');t.focus();return;}model.legs[i][f]=parsed.time;model.legs[i][f==='to_utc'?'departure_utc_date':'arrival_utc_date']=parsed.date;}else{model.legs[i][f]=t.type==='number'?(t.value===''?'':n(t.value)):(['departure','destination','trip_code'].includes(f)?t.value.toUpperCase().trim():t.value);}if(f==='temperature_band'){model.legs[i].forecast_source='manual';model.legs[i].forecast_status='Manual temperature band selected';model.legs[i].forecast_temp_c='';}if(f==='arrival_temperature_band'){model.legs[i].arrival_forecast_source='manual';model.legs[i].arrival_forecast_status='Manual temperature band selected';model.legs[i].arrival_forecast_temp_c='';}
 if(f==='destination'&&model.legs[i+1]){const next=model.legs[i+1],old=canonicalAirport(next.departure),prior=canonicalAirport(t.dataset.oldValue||'');if(!next.departure||old===canonicalAirport(t.dataset.oldValue||'')||confirm('Next leg has a different departure airport. Replace it with '+model.legs[i].destination+'?'))next.departure=model.legs[i].destination;}
 markDirty();render();});
 $('inputs').addEventListener('focusin',e=>{const t=e.target;if(['destination','arrival_temperature_band'].includes(t.dataset.field))t.dataset.oldValue=t.value;},true);
@@ -412,7 +453,7 @@ function renderDataCard(){
  const groups=cardGroups();
  const overwing=ac()?.refuel==='overwing';
  const item=(name,val)=>`<div class="dc-item"><span>${name}</span><strong>${val}</strong></div>`;
- const halves=groups.map((group,half)=>`<div class="dc-sheet" aria-label="Data Card half ${half+1}"><div class="dc-sheet-head"><b>OZAIR FLIGHT DATA CARD</b><span>${esc(model.tail||'—')} · Plan ${esc(plan)} · Half ${half+1}/${groups.length}</span></div>${group.map(i=>{const l=model.legs[i],c=computed.rows[i][plan];const fuelReady=!!ac()&&density(l)!==null;const gallons=c.g===null?'—':fmt(c.g)+' gal';const perWing=overwing&&c.g!==null?fmt(c.g/2)+' gal':'—';return `<article class="dc-leg"><div class="dc-leg-meta"><b>LEG ${i+1}</b><span>${cardVal(l.trip_date)} · ${cardVal(l.trip_code)}</span></div><div class="dc-topline"><div class="dc-depart"><span class="dc-small-label">DEPARTURE</span><strong>${cardVal(l.departure)}</strong><span class="dc-purchase">${cardVal(l.departure)} Fuel Purchase: <b>${cardVal(l.fuel_purchase_method)}</b></span></div><div class="dc-arrive"><span class="dc-small-label">ARRIVAL</span><strong>${cardVal(l.destination)}</strong><span class="dc-fbo">FBO: <b>${cardVal(l.arrival_fbo)}</b></span></div>${item('TAKEOFF UTC',cardTime(l.to_utc))}${item('LAND UTC',cardTime(l.land_utc))}${item('FLIGHT TIME',cardDuration(l.to_utc,l.land_utc))}${item('ZFW',cardVal(l.zfw_lb,' lb'))}</div><div class="dc-line-two">${item('FOB',fuelReady?fmt(c.start)+' lb':'—')}${item('PLANNED BURN',fmt(n(l.burn_lb))+' lb')}<div class="dc-item dc-actual"><span>ACTUAL BURN (lb)</span><div class="dc-write-space" aria-label="Write actual burn here"></div></div>${item('LAND FUEL',fuelReady?fmt(c.land)+' lb':'—')}<div class="dc-item dc-fuel-buy"><span>FUEL BUY</span><strong>${gallons}${overwing?` <small>(${perWing}/wing)</small>`:''}</strong></div>${item('MIN BUY',fmt(n(l.minimum_gallons_for_waiver))+' gal')}</div></article>`}).join('')}</div>`);
+ const halves=groups.map((group,half)=>`<div class="dc-sheet" aria-label="Data Card half ${half+1}"><div class="dc-sheet-head"><b>OZAIR FLIGHT DATA CARD</b><span>${esc(model.tail||'—')} · Plan ${esc(plan)} · Half ${half+1}/${groups.length}</span></div>${group.map(i=>{const l=model.legs[i],c=computed.rows[i][plan];const fuelReady=!!ac()&&density(l)!==null;const gallons=c.g===null?'—':fmt(c.g)+' gal';const perWing=overwing&&c.g!==null?fmt(c.g/2)+' gal':'—';return `<article class="dc-leg"><div class="dc-leg-meta"><b>LEG ${i+1}</b><span>${cardVal(l.trip_date)} · ${cardVal(l.trip_code)}</span></div><div class="dc-topline"><div class="dc-depart"><span class="dc-small-label">DEPARTURE</span><strong>${cardVal(l.departure)}</strong><span class="dc-purchase">${cardVal(l.departure)} Fuel Purchase: <b>${cardVal(l.fuel_purchase_method)}</b></span></div><div class="dc-arrive"><span class="dc-small-label">ARRIVAL</span><strong>${cardVal(l.destination)}</strong><span class="dc-fbo">FBO: <b>${cardVal(l.arrival_fbo)}</b></span></div>${item('TAKEOFF GMT',displayGMT(l))}${item('LAND GMT',displayGMT(l,true))}${item('FLIGHT TIME',cardDuration(l.to_utc,l.land_utc))}${item('ZFW',cardVal(l.zfw_lb,' lb'))}</div><div class="dc-line-two">${item('FOB',fuelReady?fmt(c.start)+' lb':'—')}${item('PLANNED BURN',fmt(n(l.burn_lb))+' lb')}<div class="dc-item dc-actual"><span>ACTUAL BURN (lb)</span><div class="dc-write-space" aria-label="Write actual burn here"></div></div>${item('LAND FUEL',fuelReady?fmt(c.land)+' lb':'—')}<div class="dc-item dc-fuel-buy"><span>FUEL BUY</span><strong>${gallons}${overwing?` <small>(${perWing}/wing)</small>`:''}</strong></div>${item('MIN BUY',fmt(n(l.minimum_gallons_for_waiver))+' gal')}</div></article>`}).join('')}</div>`);
  $('card-rows').innerHTML=Array.from({length:Math.ceil(halves.length/2)},(_,page)=>`<div class="dc-paper"><div class="dc-half">${halves[page*2]||''}</div><div class="dc-fold-gap"></div><div class="dc-half">${halves[page*2+1]||''}</div></div>`).join('');
 
 }
@@ -452,7 +493,7 @@ $('card-prepare-email').onclick=()=>{
 
 // Offline release transfer. A transfer file is data, never executable code.
 
-function renderEntirePlanner(){const el=$('entire-print');if(!el)return;const x=compute();el.innerHTML=`<h1>Fuel Planner — ${esc(model.legs[0]?.trip_code||'Trip')} — ${esc(model.tail||'Aircraft')}</h1><p>Printed ${new Date().toLocaleString()} • Density method: ${esc(model.density_method||'forecast')}</p>${model.legs.map((l,i)=>`<section class="entire-leg"><h2>Leg ${i+1}: ${esc(l.departure)} → ${esc(l.destination)} • ${esc(l.trip_date)}</h2><p>Departure ${esc(l.to_utc)} UTC • Arrival ${esc(l.land_utc)} UTC • FBO ${esc(l.arrival_fbo||'—')} • ZFW ${fmt(n(l.zfw_lb))} lb • Planned burn ${fmt(n(l.burn_lb))} lb • Required fuel ${fmt(n(l.required_fuel_lb))} lb</p><p>Departure range ${esc(l.temperature_band||'—')} • Arrival range ${esc(l.arrival_temperature_band||'—')} • Source ${esc(l.forecast_source||'manual')} • Method ${esc(l.fuel_purchase_method)} • Price ${money(n(l.fuel_price_per_gal))}/gal • Ramp ${money(n(l.waiverable_ramp_fee_usd))} • Waiver minimum ${fmt(n(l.minimum_gallons_for_waiver))} gal • Mandatory ${money(n(l.mandatory_fees_usd))}</p><table><thead><tr><th>Plan</th><th>Fuel purchase (lb)</th><th>Fuel buy (gal)</th><th>Start fuel</th><th>Landing fuel</th><th>Cost</th></tr></thead><tbody>${['1','2','3'].map(p=>{const c=x.rows[i][p];return `<tr><td>${p}</td><td>${fmt(n(l.plans[p].purchase_lb))}</td><td>${c.g===null?'—':fmt(c.g)}</td><td>${fmt(c.start)}</td><td>${fmt(c.land)}</td><td>${c.cost===null?'—':money(c.cost)}</td></tr>`}).join('')}</tbody></table></section>`).join('')}<h2>Trip totals: ${['1','2','3'].map(p=>'Plan '+p+' '+money(x.totals[p])).join(' | ')}</h2>`;}
+function renderEntirePlanner(){const el=$('entire-print');if(!el)return;const x=compute();el.innerHTML=`<h1>Fuel Planner — ${esc(model.legs[0]?.trip_code||'Trip')} — ${esc(model.tail||'Aircraft')}</h1><p>Printed ${new Date().toLocaleString()} • Density method: ${esc(model.density_method||'forecast')}</p>${model.legs.map((l,i)=>`<section class="entire-leg"><h2>Leg ${i+1}: ${esc(l.departure)} → ${esc(l.destination)} • ${esc(l.trip_date)}</h2><p>Departure ${esc(displayGMT(l))} • Arrival ${esc(displayGMT(l,true))} • FBO ${esc(l.arrival_fbo||'—')} • ZFW ${fmt(n(l.zfw_lb))} lb • Planned burn ${fmt(n(l.burn_lb))} lb • Required fuel ${fmt(n(l.required_fuel_lb))} lb</p><p>Departure range ${esc(l.temperature_band||'—')} • Arrival range ${esc(l.arrival_temperature_band||'—')} • Source ${esc(l.forecast_source||'manual')} • Method ${esc(l.fuel_purchase_method)} • Price ${money(n(l.fuel_price_per_gal))}/gal • Ramp ${money(n(l.waiverable_ramp_fee_usd))} • Waiver minimum ${fmt(n(l.minimum_gallons_for_waiver))} gal • Mandatory ${money(n(l.mandatory_fees_usd))}</p><table><thead><tr><th>Plan</th><th>Fuel purchase (lb)</th><th>Fuel buy (gal)</th><th>Start fuel</th><th>Landing fuel</th><th>Cost</th></tr></thead><tbody>${['1','2','3'].map(p=>{const c=x.rows[i][p];return `<tr><td>${p}</td><td>${fmt(n(l.plans[p].purchase_lb))}</td><td>${c.g===null?'—':fmt(c.g)}</td><td>${fmt(c.start)}</td><td>${fmt(c.land)}</td><td>${c.cost===null?'—':money(c.cost)}</td></tr>`}).join('')}</tbody></table></section>`).join('')}<h2>Trip totals: ${['1','2','3'].map(p=>'Plan '+p+' '+money(x.totals[p])).join(' | ')}</h2>`;}
 document.addEventListener('focusin',e=>{const t=e.target;if(t.matches('#planner input[type=number]'))t.select();});
 document.addEventListener('wheel',e=>{if(e.target.matches('input[type=number]')&&document.activeElement===e.target)e.target.blur();},{passive:true});
 $('density-method').addEventListener('change',e=>{model.density_method=e.target.value;markDirty();render();});
@@ -523,7 +564,7 @@ $('ji-files').onchange=e=>{let duplicate=0;for(let f of e.target.files){if(files
 $('ji-clear').onclick=()=>{files=[];reset();queue();$('ji-status').textContent='Selection cleared.'};
 function linesFromItems(items){const groups=[];for(const it of items){let s=it.str?.trim();if(!s)continue;let x=it.transform[4],y=it.transform[5];let g=groups.find(a=>Math.abs(a.y-y)<2.5);if(!g){g={y,parts:[]};groups.push(g)}g.parts.push({x,s})}return groups.sort((a,b)=>b.y-a.y).map(g=>g.parts.sort((a,b)=>a.x-b.x).map(p=>p.s).join(' ').replace(/\s+/g,' ').trim())}
 function parseDate(s){let m=s.match(/(\d{2})\/(\d{2})\/(\d{4})/);return m?`${m[3]}-${m[1]}-${m[2]}`:''}
-function utcDate(localDate,utc,localClock){if(!localDate||!utc)return '';let d=new Date(localDate+'T12:00:00Z');let lm=localClock?.match(/(\d{1,2}):(\d{2})/);if(lm){let lh=+lm[1],uh=+utc.split(':')[0];let diff=uh-lh;if(diff>12)d.setUTCDate(d.getUTCDate()-1);if(diff< -12)d.setUTCDate(d.getUTCDate()+1)}return d.toISOString().slice(0,10)}
+function utcDate(localDate,utc,localClock){if(!localDate||!utc||!localClock)return '';const m=localClock.match(/^(\d{1,2}):(\d{2})/),u=utc.match(/^(\d{1,2}):(\d{2})/);if(!m||!u)return '';const localMinutes=+m[1]*60+ +m[2],utcMinutes=+u[1]*60+ +u[2];const sameDay=utcMinutes-localMinutes,nextDay=sameDay+1440;const offset=sameDay>=0&&sameDay<=720?0:nextDay>=0&&nextDay<=720?1:null;if(offset===null)return '';const d=new Date(localDate+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+offset);return d.toISOString().slice(0,10);}
 function parseSummary(line,trip,tail,source){
  // Summary line has "Leg 1: Pax: 0 SGF 08/19/2026 - 09:46 CDT (14:46 Z) ... LAW 08/19/2026 ... (16:00 Z)"
  let m=line.match(/\bLeg\s*(\d+)\s*:\s*Pax:\s*\d+\s+([A-Z]{3,4})\s+(\d{2}\/\d{2}\/\d{4})\s*-\s*(.*?)\s+(?:[^\w\s]*\s*)?([A-Z]{3,4})\s+(\d{2}\/\d{2}\/\d{4})\s*-\s*(.*)/i);
@@ -590,6 +631,7 @@ function validate(parsed){
   if(last.to!==first.from&&!differentDay)warnings.push(prefix+'Airport mismatch between itineraries. Verify that an intervening repositioning leg is not missing.');
  }
  let seen=new Set();for(let l of legs){let key=[l.aircraft,l.from,l.to,l.departureUTCDate,l.departureUTC,l.arrivalUTCDate,l.arrivalUTC].join('|');if(l.departureUTC&&l.arrivalUTC){if(seen.has(key))warnings.push('Duplicate flight leg detected: '+l.aircraft+' '+l.from+'→'+l.to+' '+l.departureUTCDate+' '+l.departureUTC+'Z.');seen.add(key)}}
+ if(legs.some(l=>!l.departureUTCDate||!l.arrivalUTCDate))warnings.push('Some GMT calendar dates could not be determined. Verify these before applying or retrieving forecasts.');
  if(legs.some(l=>!l.departureUTC||!l.arrivalUTC))info.push('TBD/missing UTC times retained. These legs require manual sequencing and verification.');
  if(legs.some(l=>!l.arrivalFBO))info.push('Some arrival FBOs could not be reliably detected. Verify against source PDFs.');
  return {blocked:errors.length>0,errors,warnings,info,tails,codes};
@@ -618,7 +660,7 @@ $('ji-apply').onclick=()=>{
  if(typeof safeLeave==='function'&&!safeLeave())return;
  const tail=legs[0].aircraft.replace(/^N/i,'');
  if(!aircraftData.some(a=>a.tail===tail)){alert('Aircraft '+legs[0].aircraft+' is not in the aircraft reference list. Import canceled.');return}
- model={trip:legs[0].tripCode,tail,initial:0,legs:legs.map(l=>({...emptyLeg(),trip_code:l.tripCode,trip_date:l.departureLocalDate||l.departureUTCDate||'',departure:l.from,destination:l.to,to_utc:l.departureUTC||'',land_utc:l.arrivalUTC||'',arrival_fbo:l.arrivalFBO||''}))};
+ model={trip:legs[0].tripCode,tail,initial:0,legs:legs.map(l=>({...emptyLeg(),trip_code:l.tripCode,trip_date:l.departureLocalDate||l.departureUTCDate||'',departure_utc_date:l.departureUTCDate||'',arrival_utc_date:l.arrivalUTCDate||'',departure:l.from,destination:l.to,to_utc:l.departureUTC||'',land_utc:l.arrivalUTC||'',arrival_fbo:l.arrivalFBO||''}))};
  version=1;dirty=true;render();storeDraft();$('ji-status').textContent='Itinerary applied: '+legs.length+' legs. Enter and verify all fuel inputs before flight.';document.getElementById('baseline').scrollIntoView({behavior:'smooth'});
 };
 })();
