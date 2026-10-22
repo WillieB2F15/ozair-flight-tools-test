@@ -1,0 +1,10 @@
+{
+  "version": "0.31a",
+  "build": 2026102203,
+  "label": "NE-003 preview",
+  "notes": [
+    "Version and build identification",
+    "Release notes and manual update check",
+    "No automatic app replacement or trip deletion"
+  ]
+}
