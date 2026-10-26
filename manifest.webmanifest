@@ -1,7 +1,7 @@
 {
   "name": "OzAir Flight Tools \u2014 Pilot Test",
   "short_name": "OzAir Tools",
-  "description": "OzAir Flight Tools v0.31a pilot evaluation",
+  "description": "OzAir Flight Tools v0.32.18 pilot test",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

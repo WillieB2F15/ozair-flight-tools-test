@@ -1,10 +1,10 @@
 
-/* OzAir v0.31a Pilot Test - PWA service worker
+/* OzAir v0.32.18 Pilot Test - PWA service worker
    Handles URL query parameters and offline navigation.
    No changes to flight planning calculations or layouts.
 */
 
-const CACHE = 'ozair-v031a-pwa-public-test-4';
+const CACHE = 'ozair-v03218-pwa-public-test-1';
 
 const SHELL = [
   './',
