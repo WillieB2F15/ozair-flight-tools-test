@@ -1,6 +1,6 @@
-OzAir Flight Tools Pilot Test v0.32.18
+OzAir Flight Tools Pilot Test v0.32.20
 
-Deployment package built from GitHub main PWA shell and approved v0.32.18 development HTML.
+Deployment package built from GitHub main PWA shell and approved v0.32.20 development HTML.
 
 Upload the CONTENTS of this ZIP to the test repository main branch, replacing index.html, service-worker.js, manifest.webmanifest; retain icons. Do not upload the enclosing folder.
 
