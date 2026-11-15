@@ -1,12 +1,9 @@
-OzAir Flight Tools Pilot Test v0.32.24 — iPad PDF export candidate
+OzAir Flight Tools v0.32.25 PILOT TEST
 
-Changes from v0.32.23:
-- Installed iPad PWA: Flight Data Card button attempts to render each existing Data Card page into an offline JPEG-backed PDF and share the .pdf through the native iOS Share Sheet.
-- Visible error messages for rendering failures; cancellation is silent.
-- Existing desktop/Android print path unchanged.
-- Trip Document Import explanations unchanged.
-- No fuel planning logic changes.
+Fix: iPad standalone Data Card PDF uses local vector PDF construction; avoids SVG foreignObject/canvas security errors.
+No external PDF library or internet connection required.
+Retains v0.32.23 import labels and fuel planner.
 
-IMPORTANT: iPad PDF rendering uses browser SVG foreignObject canvas capture. Compatibility with the installed iPad PWA is UNVERIFIED. Do not consider this fixed until tested on the iPad. The PDF pages must be visually inspected for content and alignment before operational use.
+TEST ON IPAD: print/share PDF, Save to Files, open PDF and verify all legs and page breaks, print. Do not use operationally before validating card content.
 
-This is a PILOT TEST build, not a validated production release.
+Deploy contents of ZIP to root of GitHub main, commit and push.
