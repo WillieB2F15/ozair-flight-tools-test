@@ -1,4 +1,4 @@
-OzAir Flight Tools v0.32.26 PILOT TEST
+OzAir Flight Tools v0.32.28 PILOT TEST
 
 Fix: iPad standalone Data Card PDF uses local vector PDF construction; avoids SVG foreignObject/canvas security errors.
 No external PDF library or internet connection required.
