@@ -1,9 +1,4 @@
-OzAir Flight Tools v0.32.28 PILOT TEST
-
-Fix: iPad standalone Data Card PDF uses local vector PDF construction; avoids SVG foreignObject/canvas security errors.
-No external PDF library or internet connection required.
-Retains v0.32.23 import labels and fuel planner.
-
-TEST ON IPAD: print/share PDF, Save to Files, open PDF and verify all legs and page breaks, print. Do not use operationally before validating card content.
-
-Deploy contents of ZIP to root of GitHub main, commit and push.
+OzAir Flight Tools v0.32.29 — one-time 17-pilot directory update.
+Replace repository deployment files, commit and push main.
+On first launch, this revision replaces only the locally stored pilot directory. Aircraft, methods and trips remain unchanged.
+Verify all 17 contacts in Administration > Manage Pilots.
